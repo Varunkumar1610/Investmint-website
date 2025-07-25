@@ -2,8 +2,25 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { ArrowRight, TrendingUp, Shield, Brain } from "lucide-react"
 import heroImage from "@/assets/hero-image.jpg"
+import { useApp } from "@/contexts/AppContext"
 
 const Hero = () => {
+  const { dispatch } = useApp()
+
+  const handleStartInvesting = () => {
+    const element = document.getElementById('features')
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' })
+    }
+    dispatch({ type: 'SET_STEP', payload: 'budget' })
+  }
+
+  const handleLearnMore = () => {
+    const element = document.getElementById('learn')
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
   return (
     <section className="relative py-20 overflow-hidden">
       <div className="container">
@@ -21,11 +38,20 @@ const Hero = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button variant="hero" size="lg" className="group">
+              <Button 
+                variant="hero" 
+                size="lg" 
+                className="group"
+                onClick={handleStartInvesting}
+              >
                 Start Investing
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Button>
-              <Button variant="outline" size="lg">
+              <Button 
+                variant="outline" 
+                size="lg"
+                onClick={handleLearnMore}
+              >
                 Learn How It Works
               </Button>
             </div>

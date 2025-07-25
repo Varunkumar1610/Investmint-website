@@ -5,20 +5,23 @@ import RiskAssessment from "@/components/RiskAssessment"
 import StockRecommendations from "@/components/StockRecommendations"
 import IntegrationSection from "@/components/IntegrationSection"
 import AINotificationBot from "@/components/AINotificationBot"
+import { AppProvider } from "@/contexts/AppContext"
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <main>
-        <Hero />
-        <BudgetInput />
-        <RiskAssessment />
-        <StockRecommendations />
-        <IntegrationSection />
-      </main>
-      <AINotificationBot />
-    </div>
+    <AppProvider>
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main>
+          <Hero />
+          <BudgetInput />
+          <RiskAssessment />
+          <StockRecommendations />
+          <IntegrationSection />
+        </main>
+        <AINotificationBot />
+      </div>
+    </AppProvider>
   );
 };
 

@@ -3,42 +3,43 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Bot, Bell, TrendingDown, AlertTriangle, Info, X } from "lucide-react"
+import { useApp } from "@/contexts/AppContext"
 
 const AINotificationBot = () => {
-  const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      type: "alert",
-      title: "Price Drop Alert",
-      message: "TCS stock is down 3.2% - Technical indicators suggest this might be a good entry point.",
-      timestamp: "2 minutes ago",
-      stock: "TCS",
-      action: "Consider buying",
-      read: false
-    },
-    {
-      id: 2,
-      type: "warning",
-      title: "Market Sentiment",
-      message: "Negative sentiment detected for banking sector. HDFC Bank showing bearish signals.",
-      timestamp: "15 minutes ago",
-      stock: "HDFC",
-      action: "Monitor closely",
-      read: false
-    },
-    {
-      id: 3,
-      type: "info",
-      title: "AI Insight",
-      message: "Reliance Industries earnings announcement tomorrow. Volatility expected.",
-      timestamp: "1 hour ago",
-      stock: "RELIANCE",
-      action: "Stay informed",
-      read: true
-    }
-  ])
-
+  const { state, dispatch } = useApp()
   const [isMinimized, setIsMinimized] = useState(false)
+
+  const markAsRead = (id: number) => {
+    dispatch({ type: 'MARK_NOTIFICATION_READ', payload: id })
+  }
+
+  const addNewNotification = () => {
+    const newNotifications = [
+      {
+        type: "alert" as const,
+        title: "Entry Point Alert",
+        message: "INFY showing strong support at ₹1,800. RSI indicates oversold conditions.",
+        timestamp: "Just now",
+        stock: "INFY",
+        action: "Consider buying",
+        read: false
+      },
+      {
+        type: "info" as const,
+        title: "Market Update",
+        message: "Nifty 50 approaching resistance at 24,500. Volatility expected ahead of budget.",
+        timestamp: "Just now",
+        stock: "NIFTY",
+        action: "Stay alert",
+        read: false
+      }
+    ]
+    
+    const randomNotif = newNotifications[Math.floor(Math.random() * newNotifications.length)]
+    dispatch({ type: 'ADD_NOTIFICATION', payload: randomNotif })
+  }
+
+  const unreadCount = state.notifications.filter(n => !n.read).length
 
   const getIcon = (type: string) => {
     switch (type) {
@@ -55,14 +56,6 @@ const AINotificationBot = () => {
       default: return "outline"
     }
   }
-
-  const markAsRead = (id: number) => {
-    setNotifications(prev => 
-      prev.map(notif => notif.id === id ? { ...notif, read: true } : notif)
-    )
-  }
-
-  const unreadCount = notifications.filter(n => !n.read).length
 
   if (isMinimized) {
     return (
@@ -113,7 +106,7 @@ const AINotificationBot = () => {
         </CardHeader>
         
         <CardContent className="space-y-3 max-h-80 overflow-y-auto">
-          {notifications.map((notification) => (
+          {state.notifications.map((notification) => (
             <div
               key={notification.id}
               className={`p-3 rounded-lg border transition-all duration-300 cursor-pointer hover:shadow-card ${
@@ -149,9 +142,14 @@ const AINotificationBot = () => {
           ))}
           
           <div className="flex gap-2 pt-2">
-            <Button variant="outline" size="sm" className="flex-1">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="flex-1"
+              onClick={addNewNotification}
+            >
               <Bell className="w-4 h-4" />
-              Settings
+              Test Alert
             </Button>
             <Button variant="default" size="sm" className="flex-1">
               View All Alerts

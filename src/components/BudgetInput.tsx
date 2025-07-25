@@ -4,10 +4,13 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { DollarSign, PiggyBank, TrendingUp } from "lucide-react"
+import { useApp } from "@/contexts/AppContext"
+import { toast } from "@/hooks/use-toast"
 
 const BudgetInput = () => {
-  const [budget, setBudget] = useState("")
-  const [monthlyInvestment, setMonthlyInvestment] = useState("")
+  const { state, dispatch } = useApp()
+  const [budget, setBudget] = useState(state.userProfile.budget)
+  const [monthlyInvestment, setMonthlyInvestment] = useState(state.userProfile.monthlyInvestment)
 
   const budgetRanges = [
     { label: "Under ₹10,000", value: "10000", popular: false },
@@ -15,6 +18,34 @@ const BudgetInput = () => {
     { label: "₹50,000 - ₹1,00,000", value: "100000", popular: false },
     { label: "₹1,00,000+", value: "100000+", popular: false },
   ]
+
+  const handleContinue = () => {
+    if (!budget) {
+      toast({
+        title: "Budget Required",
+        description: "Please enter your investment budget to continue.",
+        variant: "destructive"
+      })
+      return
+    }
+
+    dispatch({ 
+      type: 'SET_BUDGET', 
+      payload: { budget, monthlyInvestment } 
+    })
+    
+    dispatch({ type: 'SET_STEP', payload: 'risk' })
+    
+    const element = document.getElementById('learn')
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' })
+    }
+
+    toast({
+      title: "Budget Set Successfully!",
+      description: "Let's assess your risk profile next.",
+    })
+  }
 
   return (
     <section id="features" className="py-20 bg-secondary/30">
@@ -97,7 +128,12 @@ const BudgetInput = () => {
               </div>
 
               <div className="flex justify-center pt-4">
-                <Button variant="invest" size="lg" className="min-w-48">
+                <Button 
+                  variant="invest" 
+                  size="lg" 
+                  className="min-w-48"
+                  onClick={handleContinue}
+                >
                   Continue to Risk Assessment
                 </Button>
               </div>

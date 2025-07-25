@@ -1,7 +1,17 @@
 import { Button } from "@/components/ui/button"
 import { Bell, Menu, User } from "lucide-react"
+import { useApp } from "@/contexts/AppContext"
 
 const Header = () => {
+  const { state } = useApp()
+  const unreadCount = state.notifications.filter(n => !n.read).length
+
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
   return (
     <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
       <div className="container flex h-16 items-center justify-between">
@@ -13,21 +23,32 @@ const Header = () => {
         </div>
         
         <nav className="hidden md:flex items-center gap-6">
-          <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">
+          <button 
+            onClick={() => scrollToSection('features')}
+            className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+          >
             Features
-          </a>
-          <a href="#learn" className="text-muted-foreground hover:text-foreground transition-colors">
+          </button>
+          <button 
+            onClick={() => scrollToSection('learn')}
+            className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+          >
             Learn
-          </a>
-          <a href="#dashboard" className="text-muted-foreground hover:text-foreground transition-colors">
+          </button>
+          <button 
+            onClick={() => scrollToSection('dashboard')}
+            className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+          >
             Dashboard
-          </a>
+          </button>
         </nav>
 
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" className="relative">
             <Bell className="w-4 h-4" />
-            <span className="absolute -top-1 -right-1 w-2 h-2 bg-success rounded-full"></span>
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 w-2 h-2 bg-success rounded-full"></span>
+            )}
           </Button>
           <Button variant="soft" size="sm">
             <User className="w-4 h-4" />

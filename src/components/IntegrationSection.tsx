@@ -1,9 +1,35 @@
+import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ExternalLink, Shield, Zap, Star, CheckCircle } from "lucide-react"
+import { toast } from "@/hooks/use-toast"
 
 const IntegrationSection = () => {
+  const [connectedPlatforms, setConnectedPlatforms] = useState<string[]>([])
+
+  const handleConnect = (platformName: string) => {
+    if (connectedPlatforms.includes(platformName)) {
+      setConnectedPlatforms(prev => prev.filter(p => p !== platformName))
+      toast({
+        title: "Platform Disconnected",
+        description: `Successfully disconnected from ${platformName}.`,
+      })
+    } else {
+      setConnectedPlatforms(prev => [...prev, platformName])
+      toast({
+        title: "Platform Connected",
+        description: `Successfully connected to ${platformName}! You can now execute trades directly.`,
+      })
+    }
+  }
+
+  const handleGetNotified = () => {
+    toast({
+      title: "Notifications Enabled",
+      description: "You'll be notified when auto-invest feature becomes available!",
+    })
+  }
   const platforms = [
     {
       name: "Groww",
@@ -97,9 +123,13 @@ const IntegrationSection = () => {
                       </div>
                     ))}
                   </div>
-                  <Button variant="invest" className="w-full">
+                  <Button 
+                    variant="invest" 
+                    className="w-full"
+                    onClick={() => handleConnect(platform.name)}
+                  >
                     <ExternalLink className="w-4 h-4" />
-                    Connect to {platform.name}
+                    {connectedPlatforms.includes(platform.name) ? 'Disconnect from' : 'Connect to'} {platform.name}
                   </Button>
                 </CardContent>
               </Card>
@@ -132,7 +162,12 @@ const IntegrationSection = () => {
                 <p className="text-sm text-primary mb-4">
                   Auto-invest feature based on AI recommendations with portfolio rebalancing
                 </p>
-                <Button variant="outline" size="sm" className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+                  onClick={handleGetNotified}
+                >
                   Get Notified
                 </Button>
               </CardContent>

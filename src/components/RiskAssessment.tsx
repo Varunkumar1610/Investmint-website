@@ -1,14 +1,17 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Shield, AlertTriangle, TrendingUp, CheckCircle } from "lucide-react"
+import { useApp } from "@/contexts/AppContext"
+import { toast } from "@/hooks/use-toast"
 
 const RiskAssessment = () => {
+  const { state, dispatch } = useApp()
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState<number[]>([])
-  const [showResults, setShowResults] = useState(false)
+  const [showResults, setShowResults] = useState(state.userProfile.completedAssessment)
 
   const questions = [
     {
@@ -56,17 +59,39 @@ const RiskAssessment = () => {
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1)
     } else {
+      const totalScore = newAnswers.reduce((sum, s) => sum + s, 0)
+      const riskProfile = totalScore <= 8 ? 'Conservative' : totalScore <= 12 ? 'Moderate' : 'Aggressive'
+      
+      dispatch({ 
+        type: 'SET_RISK_PROFILE', 
+        payload: { riskProfile, riskScore: totalScore } 
+      })
+      
+      dispatch({ type: 'SET_STEP', payload: 'recommendations' })
       setShowResults(true)
+      
+      toast({
+        title: "Risk Assessment Complete!",
+        description: `You've been classified as a ${riskProfile} investor.`,
+      })
     }
   }
 
-  const getTotalScore = () => answers.reduce((sum, score) => sum + score, 0)
+  const getTotalScore = () => state.userProfile.riskScore || answers.reduce((sum, score) => sum + score, 0)
   
   const getRiskProfile = () => {
     const score = getTotalScore()
     if (score <= 8) return { level: "Conservative", color: "bg-blue-500", icon: Shield }
     if (score <= 12) return { level: "Moderate", color: "bg-yellow-500", icon: AlertTriangle }
     return { level: "Aggressive", color: "bg-red-500", icon: TrendingUp }
+  }
+
+  const handleViewRecommendations = () => {
+    dispatch({ type: 'SET_STEP', payload: 'dashboard' })
+    const element = document.getElementById('dashboard')
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' })
+    }
   }
 
   const progress = ((currentQuestion + (showResults ? 1 : 0)) / questions.length) * 100
@@ -137,7 +162,11 @@ const RiskAssessment = () => {
               </div>
 
               <div className="flex justify-center pt-4">
-                <Button variant="invest" size="lg">
+                <Button 
+                  variant="invest" 
+                  size="lg"
+                  onClick={handleViewRecommendations}
+                >
                   View Personalized Recommendations
                 </Button>
               </div>
@@ -149,7 +178,7 @@ const RiskAssessment = () => {
   }
 
   return (
-    <section className="py-20 bg-muted/30">
+    <section id="learn" className="py-20 bg-muted/30">
       <div className="container max-w-4xl mx-auto">
         <div className="text-center mb-8">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
