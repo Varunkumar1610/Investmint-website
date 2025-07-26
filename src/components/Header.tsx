@@ -1,9 +1,13 @@
 import { Button } from "@/components/ui/button"
-import { Bell, Menu, User } from "lucide-react"
+import { Bell, Menu, LogOut } from "lucide-react"
 import { useApp } from "@/contexts/AppContext"
+import { useAuth } from "@/hooks/useAuth"
+import { useNavigate } from "react-router-dom"
 
 const Header = () => {
   const { state } = useApp()
+  const { user, signOut } = useAuth()
+  const navigate = useNavigate()
   const unreadCount = state.notifications.filter(n => !n.read).length
 
   const scrollToSection = (sectionId: string) => {
@@ -50,10 +54,30 @@ const Header = () => {
               <span className="absolute -top-1 -right-1 w-2 h-2 bg-success rounded-full"></span>
             )}
           </Button>
-          <Button variant="soft" size="sm">
-            <User className="w-4 h-4" />
-            Account
-          </Button>
+          {user ? (
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground hidden sm:block">
+                {user.email}
+              </span>
+              <Button 
+                variant="soft"
+                size="sm"
+                onClick={signOut}
+                className="flex items-center gap-2"
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="hidden sm:inline">Sign Out</span>
+              </Button>
+            </div>
+          ) : (
+            <Button 
+              variant="soft"
+              size="sm"
+              onClick={() => navigate('/auth')}
+            >
+              Login
+            </Button>
+          )}
           <Button variant="default" size="icon" className="md:hidden">
             <Menu className="w-4 h-4" />
           </Button>

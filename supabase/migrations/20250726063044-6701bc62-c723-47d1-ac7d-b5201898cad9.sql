@@ -1,0 +1,3 @@
+-- Enable email confirmation (optional, can be disabled in Supabase settings for faster testing)
+-- This migration sets up basic auth configuration
+-- No additional tables needed for basic email/password auth
