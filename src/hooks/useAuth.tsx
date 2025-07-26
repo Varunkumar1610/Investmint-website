@@ -3,6 +3,8 @@ import { User, Session } from '@supabase/supabase-js'
 import { supabase } from '@/integrations/supabase/client'
 import { toast } from '@/hooks/use-toast'
 
+// Authentication hook and provider
+
 interface AuthContextType {
   user: User | null
   session: Session | null
